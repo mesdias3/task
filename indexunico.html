@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Cadastro de Produtos</title>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+
+<style type="text/css">
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 10px;
+}
+
+input {
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+table {
+    width: 98%;
+    padding: 20px 0;
+    border-radius: 5px;
+}
+
+th {
+    text-align: start;
+    border-bottom: insert;
+    padding-bottom: 5px;
+}
+
+i {
+    font-size: 20px;
+}
+
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Produtos</h1>
+        
+        <form id="produtoForm">
+            <label for="nomeItem">Nome do Produto:</label>
+            <input type="text" id="nomeItem" required>
+
+            <label for="descItem">Descrição:</label>
+            <input type="text" id="descItem" required>
+
+            <label for="valorItem">Preço:</label>
+            <input type="number" id="valorItem" required>
+
+            <button type="submit">Cadastrar Produto</button>
+        </form>
+
+        <h2>Lista de Produtos</h2>
+        <table id="tabelaProdutos">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Produtos serão adicionados aqui dinamicamente -->
+            </tbody>
+        </table>
+    </div>
+
+<script src="script.js">
+const tbody = document.querySelector("tbody");
+
+const nome = document.querySelector("#nomeItem");
+const desc = document.querySelector("#descItem");
+const valor = document.querySelector("#valorItem");
+
+let items;
+
+document.getElementById('produtoForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    if(desc.value === "" || valor.value === "" || nome.value === ""){
+        return alert("Preencha todos os campos!");
+    }else{
+        items.push({
+            nome: nomeItem.value,
+            desc: desc.value,
+            valor: Math.abs(valor.value).toFixed(2)
+        });
+
+        setItensBD();
+        loadItens();
+        limparFormulario();
+    }
+});
+
+function limparFormulario() {
+    document.getElementById('produtoForm').reset();
+}
+
+function deleteItem(index) {
+    items.splice(index, 1);
+    setItensBD();
+    loadItens();
+}
+
+function insertItem(item, index) {
+    let tr = document.createElement("tr");
+
+    tr.innerHTML = `
+        <td>${item.nome}</td>
+        <td>${item.desc}</td>
+        <td>R$ ${item.valor}</td>
+        <td class="columnAction">
+            <button onclick="deleteItem(${index})"><i class='bx bx-trash'></i></button>
+        </td>
+    `;
+
+    tbody.appendChild(tr);
+}
+
+function loadItens() {
+    items = getItensBD();
+    items.sort((a, b) => a.valor - b.valor);
+    tbody.innerHTML = "";
+    items.forEach((item, index) => {
+        insertItem(item, index);
+    });
+}
+
+const getItensBD = () => JSON.parse(localStorage.getItem("task_db")) ?? [];
+const setItensBD = () => 
+    localStorage.setItem("task_db", JSON.stringify(items));
+
+loadItens();
+
+</script>
+</body>
+</html>
